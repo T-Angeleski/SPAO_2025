@@ -83,13 +83,15 @@ CREATE TABLE Lab1_DW.Fact_Shipments
     SKey_ship_method   INT   NOT NULL,
     SKey_product_model INT   NOT NULL,
     SKey_ship_date     INT   NOT NULL,
+    SKey_territory     INT   NOT NULL,
     total_quantity     INT   NOT NULL,
     total_amount       MONEY NOT NULL,
     ETL_LOAD_TIME      DATETIME DEFAULT GETUTCDATE(),
 
     FOREIGN KEY (SKey_ship_method) REFERENCES Lab1_DW.Dim_ShipMethod (SKey_ship_method),
     FOREIGN KEY (SKey_product_model) REFERENCES Lab1_DW.Dim_ProductModel (SKey_product_model),
-    FOREIGN KEY (SKey_ship_date) REFERENCES Lab1_DW.Dim_ShipDate (SKey_ship_date)
+    FOREIGN KEY (SKey_ship_date) REFERENCES Lab1_DW.Dim_ShipDate (SKey_ship_date),
+    FOREIGN KEY (SKey_territory) REFERENCES Lab1_DW.Dim_SalesTerritory (SKey_territory)
 )
 
 -- Part 3 : Time dimension
