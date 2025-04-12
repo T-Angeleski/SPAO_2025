@@ -80,26 +80,27 @@ CREATE TABLE Lab1_DW.Dim_ShipDate
 
 CREATE TABLE Lab1_DW.Fact_Shipments
 (
-    SKey_ship_method INT   NOT NULL,
-    SKey_product     INT   NOT NULL,
-    SKey_ship_date   INT   NOT NULL,
-    total_quantity   INT   NOT NULL,
-    total_amount     MONEY NOT NULL,
-    ETL_LOAD_TIME    DATETIME DEFAULT GETUTCDATE(),
+    SKey_ship_method   INT   NOT NULL,
+    SKey_product_model INT   NOT NULL,
+    SKey_ship_date     INT   NOT NULL,
+    total_quantity     INT   NOT NULL,
+    total_amount       MONEY NOT NULL,
+    ETL_LOAD_TIME      DATETIME DEFAULT GETUTCDATE(),
 
     FOREIGN KEY (SKey_ship_method) REFERENCES Lab1_DW.Dim_ShipMethod (SKey_ship_method),
-    FOREIGN KEY (SKey_product) REFERENCES Lab1_DW.Dim_Products (SKey_product),
+    FOREIGN KEY (SKey_product_model) REFERENCES Lab1_DW.Dim_ProductModel (SKey_product_model),
     FOREIGN KEY (SKey_ship_date) REFERENCES Lab1_DW.Dim_ShipDate (SKey_ship_date)
 )
-
 
 -- Part 3 : Time dimension
 DECLARE @StartDate DATE;
 SELECT @StartDate = MIN(OrderDate)
 FROM Sales.SalesOrderHeader;
 
-DECLARE @NumberOfYears INT = 5;
-DECLARE @EndDate DATE = DATEADD(YEAR, @NumberOfYears, @StartDate);
+DECLARE @EndDate DATE;
+SELECT @EndDate = MAX(OrderDate)
+FROM Sales.SalesOrderHeader
+
 DECLARE @CurrentDate DATE = @StartDate;
 
 WHILE @CurrentDate <= @EndDate
@@ -115,4 +116,14 @@ WHILE @CurrentDate <= @EndDate
             END
 
         SET @CurrentDate = DATEADD(DAY, 1, @CurrentDate);
-    END
+    END;
+
+-- DDL - Creating the status table to track the procedures
+CREATE TABLE Lab1_DW.ETL_Status
+(
+    table_name    VARCHAR(255) NOT NULL,
+    start_time    DATETIME     NOT NULL,
+    end_time      DATETIME,
+    status        VARCHAR(50),
+    rows_affected INT
+)
