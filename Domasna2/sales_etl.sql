@@ -176,13 +176,14 @@ BEGIN
     SELECT dim_st.SKey_territory,
            dim_p.SKey_product,
            dim_date.SKey_date,
-           sod.OrderQty  AS total_quantity,
-           sod.LineTotal AS total_amount
+           sod.OrderQty  AS quantity,
+           sod.LineTotal AS amount
     INTO #TempSales
     FROM Sales.SalesOrderHeader soh
              JOIN Sales.SalesOrderDetail sod ON soh.SalesOrderID = sod.SalesOrderID
              JOIN Production.Product p ON sod.ProductID = p.ProductID
              JOIN Sales.SalesTerritory st ON soh.TerritoryID = st.TerritoryID
+
              JOIN Lab1_DW.Dim_Products dim_p ON p.ProductID = dim_p.product_id
              JOIN Lab1_DW.Dim_SalesTerritory dim_st ON st.TerritoryID = dim_st.territory_id
              JOIN Lab1_DW.Dim_Date dim_date ON FORMAT(soh.OrderDate, 'yyyyMMdd') = dim_date.SKey_date;
@@ -190,8 +191,8 @@ BEGIN
     WITH AggregatedSales AS (SELECT SKey_territory,
                                     SKey_product,
                                     SKey_date,
-                                    SUM(total_quantity) AS total_quantity,
-                                    SUM(total_amount)   AS total_amount
+                                    SUM(quantity) AS total_quantity,
+                                    SUM(amount)   AS total_amount
                              FROM #TempSales
                              GROUP BY SKey_territory,
                                       SKey_product,
